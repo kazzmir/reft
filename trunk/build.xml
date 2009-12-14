@@ -1,0 +1,66 @@
+<project name="reft" default="all">
+
+	<property name="version" value="1.7" />
+
+	<target name="all">
+		<antcall target="jar" />
+	</target>
+
+	<target name="jar" depends="compile">
+		<unjar src="lib/jdom.jar" dest="classes" />
+		<unjar src="lib/ui.jar" dest="classes" />
+		<copy file="src/net/sf/ooweb/quips.txt" toDir="classes/net/sf/ooweb" />
+		<copy file="README" toDir="classes" />
+		<copy toDir="classes">
+			<fileset dir="resources">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+		<jar destfile="reft-${version}.jar"
+		     manifest="manifest">
+			<fileset dir="classes" />
+		</jar>
+	</target>
+		       
+	<target name="compile">
+		<mkdir dir="classes" />
+		<javac srcdir="src"
+		       fork="true"
+		       memoryMaximumSize="768m"
+		       destdir="classes"
+		       debug="true">
+		       <classpath>
+		       		<pathelement path="lib/jdom.jar" />
+		       		<pathelement path="lib/ui.jar" />
+		       </classpath>
+	       </javac>
+	</target>
+
+	<target name="package">
+		<delete dir="builds/x" quiet="true" />
+		<mkdir dir="builds/x/reft-${version}" />
+		<copy toDir="builds/x/reft-${version}">
+			<fileset dir=".">
+				<include name="src/**/*.java" />
+				<include name="src/net/sf/ooweb/quips.txt" />
+				<include name="build.xml" />
+				<include name="manifest" />
+				<include name="README" />
+				<include name="resources/*.xml" />
+				<include name="lib/*.jar" />
+			</fileset>
+		</copy>
+		<tar destfile="builds/reft-${version}.tar.gz"
+		     basedir="builds/x"
+		     compression="gzip" />
+		<move file="builds/x/reft-${version}" toDir="builds" />
+		     <!--
+		<delete dir="reft-${version}" quiet="true" />
+		-->
+	</target>
+
+	<target name="clean">
+		<delete dir="classes" quiet="true" />
+	</target>
+
+</project>

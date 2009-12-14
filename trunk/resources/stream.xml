@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="0.3"
+			weighty="1"
+			gridheight="2"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+		<label id="l1" font="Georgia-BOLD-12" foreground="black" text="Files you are sharing!" />
+
+		<scrollpane minimumsize="300,200">
+			<list id="fileList" editable="true" />
+		</scrollpane>
+
+		<hbox>
+			<glue size="1" />
+			<button id="add" text="Add File/Directory" />
+			<glue size="1" />
+			<button id="delete" text="Remove File(s)" />
+			<glue size="1" />
+			<button id="stop" text="Stop adding" enabled="False" />
+		</hbox>
+	</vbox>
+
+	<vbox>
+		<gridbagconstraints
+			gridx="2"
+			gridy="0"
+			insets="10,10,0,10"
+			weightx="1"
+			weighty="0.1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTHWEST" />
+		<hbox alignmentx="0">
+			<label text="Server: " />
+			<textfield id="server" columns="15" />
+		</hbox>
+		<hbox alignmentx="0">
+			<label text="Listen: " />
+			<textfield editable="false" id="url" />
+		</hbox>
+		<buttongroup alignmentx="0" >
+			<radiobutton text="On" id="on" />
+			<radiobutton text="Off" id="off" />
+		</buttongroup>
+
+		<glue size="1" />
+
+		<hbox alignmentx="0">
+			<label text="Port " />
+			<textfield id="port" columns="5" />
+		</hbox>
+		<glue size="3" />
+	</vbox>
+
+	<vbox>
+		<gridbagconstraints
+			gridx="2"
+			gridy="1"
+			insets="5,10,10,10"
+			weightx="0.2"
+			weighty="1"
+			fill="GridBagConstraints.BOTH"
+			/>
+
+		<label text="Streaming HTTP Messages" />
+		<scrollpane>
+			<textarea
+				id="log"
+				editable="false"
+				wrapstyleword="true" />
+		</scrollpane>
+	</vbox>
+</panel>

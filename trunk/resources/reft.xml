@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout" background="125,209,195">
+
+	<vbox>
+		<label text="Uploads" />
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="0.3"
+			weighty="0.1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.WEST"
+			/>
+
+		<tabbedpane id="uploads" />
+	</vbox>
+
+	<vbox>
+		<label text="Downloads" />
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="0.3"
+			weighty="0.1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.WEST"
+			/>
+
+		<tabbedpane id="downloads" />
+	</vbox>
+
+	<panel id="buddylist" layout="BorderLayout">
+		<gridbagconstraints
+			gridx="1"
+			gridy="0"
+			gridheight="2"
+			weightx="0.2"
+			weighty="0.1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.WEST"
+			/>
+	</panel>
+</panel>
