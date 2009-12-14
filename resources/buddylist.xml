@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+	<label text="Buddy list">
+		<gridbagconstraints gridx="0"
+			gridy="0"
+			weighty="0.1"
+			weightx="0.1"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+	</label>
+	
+	<vbox>
+		<gridbagconstraints gridx="0"
+				gridy="1"
+				weighty="0.3"
+				weightx="0.1"
+				fill="GridBagConstraints.VERTICAL"
+				/>
+		<toolbar id="toolbar"
+			floatable="false"
+			>
+			<button id="add" text="Add" />
+			<button id="remove" text="Remove" />
+			<button id="edit" text="Edit" />
+		</toolbar>
+
+		<scrollpane>
+			<list id="people" />
+		</scrollpane>
+
+		<button id="send" text="Send File" />
+	</vbox>
+
+	<panel id="currentbuddy" size="100,100" border="MatteBorder(2,2,2,2,667A76)">
+		<gridbagconstraints gridx="0"
+				gridy="2"
+				weighty="0.1"
+				insets="3,3,3,3"
+				weightx="0.1"
+				/>
+	</panel>
+
+	<tabbedpane id="sentfiles">
+		<gridbagconstraints gridx="0"
+				gridy="3"
+				weighty="0.3"
+				fill="GridBagConstraints.BOTH"
+				/>
+	</tabbedpane>
+</panel>

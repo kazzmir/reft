@@ -1,0 +1,33 @@
+General:
+	Reft makes it easy to share files over a network. You can use any of
+	the following methods
+	* Reft protocol
+	* HTTP protocol
+	* FTP protocol
+	* Streaming mp3 server
+
+Reft Protocol:
+	Machine A will be sending to Machine B.
+	byte = 1 byte
+	int = 4 bytes
+	long = 8 bytes
+	1. A sends B the number of files he wishes to send and total size
+	of all the files
+	<number of files : int> <size : long>
+
+	2. B sends back 1 to accept transfer, 0 to not accept
+	<yes or no : byte>
+
+	# For each file A repeats steps 3-6
+	3. A sends B the filename, a 1024 byte string. B should trim whitespace
+	from the end of the string.
+	<filename : 1024 bytes>
+
+	4. A sends B the filetype, 1 for directory, 0 for file
+	<type : int>
+
+	5. If the type is file( 0 ) A sends B the size of the file
+	<size : long>
+
+	6. If the type is file( 0 ) A sends B the contents of the file
+	<contents : size of file * byte>

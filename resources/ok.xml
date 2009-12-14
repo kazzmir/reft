@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="0.3"
+			weighty="0.1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTH"
+			/>
+
+		<label id="ip" />
+		<label id="files" />
+		<label id="size" />
+	</vbox>
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="0.3"
+			weighty="0.1"
+			/>
+
+		<button id="ok" text="OK" />
+		<glue size="2" />
+		<button id="no" text="No!" />
+	</hbox>
+</panel>
