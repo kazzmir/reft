@@ -1,6 +1,7 @@
 package com.rafkind.reft.stream;
 
 import com.rafkind.reft.Lambda0;
+import com.rafkind.reft.Lambda1;
 
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.Header;
@@ -29,13 +30,18 @@ public class StreamReader implements Runnable {
 	private int bitRate = 96;
 
 	private List marks;
+    /* current mark */
 	private long lastMark;
+    /* first mark for the current song */
+    private long firstMark;
 
 	private Lambda0 nextFileProc;
+    private Lambda1 updater;
 
-	public StreamReader( final Lambda0 proc ){
+	public StreamReader(final Lambda0 proc, final Lambda1 updater){
 		this.marks = new ArrayList();
 		this.nextFileProc = proc;
+        this.updater = updater;
 	}
 
 	public synchronized void setFile( File f ) throws IOException {
@@ -44,6 +50,7 @@ public class StreamReader implements Runnable {
 		}
 		this.reading = new FileInputStream( f );
 		setBitRate( readBitRate( f ) );
+        firstMark = lastMark;
 	}
 
 	private synchronized FileInputStream getStream(){
@@ -81,12 +88,39 @@ public class StreamReader implements Runnable {
 		return ! dead;
 	}
 
+    public void update(int secondsElapsed){
+        updater.invoke_(secondsElapsed);
+    }
+
 	public void run(){
 		dead = false;
 
 		try{
 			while ( ! isDone() ){
 				readMark();
+                /* update in seconds */
+                update((int)((MARK_LENGTH / getByteRate()) * (lastMark - firstMark)));
+
+                /* len bytes * 1000 ms/s / (rate bits/s / 8 bits/byte)
+                 * = len bytes * 1000 ms/s * (8/rate) s / bytes
+                 * = len * 1000 ms * 8 / rate
+                 * = len * 8000 ms / rate
+                 *  when len = 4096
+                 * = 2^12 * 2^6 * 125 ms / rate
+                 * = 2^18 * 125 ms / rate
+                 * kbits/s | delay (ms)
+                 * ---------------
+                 * 64      | 500
+                 * 96      | 333
+                 * 128     | 250
+                 * 164     | 195
+                 * 192     | 166
+                 * 256     | 125
+                 * 362     | 88
+                 *
+                 * d(rate) of 8000len / rate
+                 * = - 8000len / rate^2
+                 */
 				rest( (int)(MARK_LENGTH * 1000.0 / getByteRate()) );
 			}
 
