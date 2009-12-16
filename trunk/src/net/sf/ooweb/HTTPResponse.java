@@ -157,6 +157,7 @@ class HTTPResponse {
             printStream.write(fileBuffer, 0, n);
             watcher.update(n);
         }
+        watcher.update(0);
     }
 
 	void sendFile( File target, final String name, String ifModSince, Session session ) throws IOException {

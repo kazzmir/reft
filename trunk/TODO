@@ -3,3 +3,4 @@
 * put sliders on downloads that limit download/upload speeds
 * add ogg support for the streaming pane
 * add torrent seeding
+* add slider to streaming pane to control where in the song the server is
