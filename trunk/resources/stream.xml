@@ -35,6 +35,18 @@
 			weighty="0.1"
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTHWEST" />
+        <vbox alignmentx="0">
+            <hbox>
+                <label text="Now playing: " />
+                <textfield id="now-playing" editable="false" text="Server is off!" />
+            </hbox>
+            <hbox>
+                <label text="Song Position" />
+                <glue />
+                <label text="0:00" id="time-position" />
+                <slider id="song-position" />
+            </hbox>
+        </vbox>
 		<hbox alignmentx="0">
 			<label text="Server: " />
 			<textfield id="server" columns="15" />

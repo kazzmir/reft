@@ -100,7 +100,7 @@ public class StreamingPane{
 
 		final JList list = (JList) engine.find( "fileList" );
 		final FileList files = new FileList();
-		list.setModel( files );
+		list.setModel(files);
 		list.setCellRenderer( new ListCellRenderer(){
 			public Component getListCellRendererComponent(
 					  JList list,
@@ -133,15 +133,34 @@ public class StreamingPane{
 			}
 		});
 
-		final StreamReader reader = new StreamReader( new Lambda0(){
+        final JTextField nowPlaying = (JTextField) engine.find("now-playing");
+        final JLabel timePosition = (JLabel) engine.find("time-position");
+
+		final StreamReader reader = new StreamReader(new Lambda0(){
 			private Lambda0 next = files.getNextFileLambda();
 			public Object invoke(){
 				File f = (File) next.invoke_();
 				list.repaint();
+                nowPlaying.setText(f.getName());
 				log.invoke_( "Next song " + f.getName() );
 				return f;
 			}
-		});
+		}, new Lambda1(){
+            private String pad(int f){
+                if (f < 10){
+                    return "0" + f;
+                }
+                return String.valueOf(f);
+            }
+
+            public Object invoke(Object o_){
+                int time = (Integer) o_;
+                int minutes = time / 60;
+                int seconds = time % 60;
+                timePosition.setText(minutes + ":" + pad(seconds));
+                return null;
+            }
+        });
 
 		final MutableBoolean serverIsOn = new MutableBoolean( false );
 		final JRadioButton on = (JRadioButton) engine.find( "on" );
@@ -156,17 +175,17 @@ public class StreamingPane{
 							int i = Integer.parseInt( portField.getText() );
 							serverIsOn.setFalse();
 							off.setSelected( true );
-							while ( reader.isRunning() ){
-								rest( 10 );
+							while (reader.isRunning()){
+								rest(10);
 							}
 							reader.reset();
-							reader.setDone( false );
-							new Thread( reader ).start();
+							reader.setDone(false);
+							new Thread(reader).start();
 							server.register( "/", new Object(){
 								public Object index() throws IOException {
 									HTTP.setMimeType( "audio/mpeg" );
 									log.invoke_( "Adding listener " + Thread.currentThread().getName() );
-									return new StreamingInputStream( reader );
+									return new StreamingInputStream(reader);
 								}
 								
 								public String handleError( String code, String message ){
@@ -202,13 +221,14 @@ public class StreamingPane{
 
 		off.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent ae ){
-				if ( serverIsOn.isTrue() ){
-						  serverIsOn.setFalse();
-						  reader.setDone( true );
-						  server.shutdown();
-						  off.setSelected( true );
-						  log.invoke_( "Stopped streaming HTTP server" );
-				}
+                if ( serverIsOn.isTrue() ){
+                    serverIsOn.setFalse();
+                    reader.setDone( true );
+                    server.shutdown();
+                    off.setSelected( true );
+                    nowPlaying.setText("Server is off!");
+                    log.invoke_( "Stopped streaming HTTP server" );
+                }
 			}
 		});
 
