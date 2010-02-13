@@ -27,7 +27,7 @@ public class SpeedWatcher{
         System.out.println("slot is " + slot);
         */
         slots[slot] += bytes;
-        if (slot == 0 && !printed){
+        if (bytes == 0 || (slot == 0 && !printed)){
             print();
             for (int i = 0; i < MAX; i++){
                 slots[i] = 0;
