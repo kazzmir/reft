@@ -228,14 +228,23 @@ public class Reft extends JFrame {
 				JButton set = new JButton( "Set port" );
 				set.addActionListener( new ActionListener(){
 					public void actionPerformed( ActionEvent action ){
+                        int oldPort = getListenPort();
 						try{
-							int portNum = Integer.parseInt( port.getText() );
-							setListenPort( portNum );
-							server.setPort( portNum );
+							int portNum = Integer.parseInt(port.getText());
+							setListenPort(portNum);
+                            server.kill();
+							// server.setPort(portNum);
+                            server.restart(portNum);
 							close.invoke();
-						} catch ( Exception e ){
+                            System.out.println("Changed reft port to " + portNum);
+						} catch (Exception e){
 							System.out.println( "Couldnt change port" );
 							e.printStackTrace();
+                            try{
+                                //server.setPort(oldPort);
+                                server.restart(oldPort);
+                            } catch (Exception e2){
+                            }
 						}
 					}
 				});
