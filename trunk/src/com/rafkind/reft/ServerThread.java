@@ -27,15 +27,28 @@ public class ServerThread extends Thread {
 		this.quit = true;
 		try{
 			listen.close();
-		} catch ( IOException ie ){
+		} catch (IOException ie){
 			ie.printStackTrace();
 		}
 	}
 
-	public void setPort( int port ) throws IOException {
+    public void restart(int port) throws IOException {
+        quit = true;
+        setPort(port);
+        while (isRunning()){
+			try{
+				Thread.sleep( 1 );
+			} catch ( Exception e ){
+			}
+        }
+
+        quit = false;
+        new Thread(this).start();
+    }
+
+	public void setPort(int port) throws IOException {
 		listen.close();
-		listen = new ServerSocket( port );
-		quit = false;
+		listen = new ServerSocket(port);
 	}
 
 	public synchronized boolean isRunning(){
@@ -50,11 +63,11 @@ public class ServerThread extends Thread {
 
 			try{
 				Socket client = listen.accept();
-				lambda.invoke( client );
-			} catch ( IOException ie ){
+				lambda.invoke(client);
+			} catch (IOException ie){
 				System.out.println( "Listen socket closed" );
 				ie.printStackTrace();
-			} catch ( Exception e ){
+			} catch (Exception e){
 				e.printStackTrace();
 			}
 
@@ -62,7 +75,6 @@ public class ServerThread extends Thread {
 				Thread.sleep( 1 );
 			} catch ( Exception e ){
 			}
-
 		}
 
 		running = false;
