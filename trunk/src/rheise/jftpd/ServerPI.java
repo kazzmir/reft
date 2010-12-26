@@ -131,38 +131,38 @@ public class ServerPI implements Runnable {
 	 * written to the socket. Data transfers, however, require a separate
 	 * data socket to be created via the ServerDTP.
 	 */
-	public ServerPI( final Socket clientSocket, final FileTree manager, final Lambda1 log ) throws IOException {
+	public ServerPI(final Socket clientSocket, final FileTree manager, final Lambda1 log) throws IOException {
 		this.clientSocket = clientSocket;
 		reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
 
 		final ServerPI pi = this;
 
-		dtp = new ServerDTP( pi, manager );
+		dtp = new ServerDTP(pi, manager);
 
 		Lambda2 replyLambda = new Lambda2(){
-			public Object invoke( Object code, Object message ){
+			public Object invoke(Object code, Object message){
 				int i = ((Integer) code).intValue();
-				reply( i, (String) message );
+				reply(i, (String) message);
 				return null;
 			}
 		};
 
 		handlers = new HashMap();
-		handlers.put( "user", new UserHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object name ){
+		handlers.put("user", new UserHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object name){
 				username = (String) name;
 				return null;
 			}
 		}));
-		handlers.put( "pwd", new PwdHandler( replyLambda, new Lambda0(){
+		handlers.put("pwd", new PwdHandler(replyLambda, new Lambda0(){
 			public Object invoke(){
 				return getCurrentDirectory();
 			}
 		}));
-		handlers.put( "list", new ListHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object path ) throws Exception {
-				dtp.sendList( sanitizePath( getCurrentDirectory() + (String) path ) );
+		handlers.put("list", new ListHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object path) throws Exception {
+				dtp.sendList(sanitizePath(getCurrentDirectory() + (String) path));
 				return null;
 			}
 		}, new Lambda0(){
@@ -170,9 +170,9 @@ public class ServerPI implements Runnable {
 				return "/";
 			}
 		}));
-		handlers.put( "nlst", new NlstHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object path ) throws Exception {
-				dtp.sendNameList( sanitizePath( getCurrentDirectory() + (String) path ) );
+		handlers.put("nlst", new NlstHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object path) throws Exception {
+				dtp.sendNameList(sanitizePath(getCurrentDirectory() + (String) path));
 				return null;
 			}
 		}, new Lambda0(){
@@ -181,68 +181,68 @@ public class ServerPI implements Runnable {
 			}
 		}));
 		Lambda1 setClientSocket = new Lambda1(){
-			public Object invoke( Object get ){
-				dtp.setClientSocket( (Lambda0) get );
+			public Object invoke(Object get){
+				dtp.setClientSocket((Lambda0) get);
 				return null;
 			}
 		};
-		handlers.put( "port", new PortHandler( replyLambda, setClientSocket ) );
-		handlers.put( "pasv", new PasvHandler( replyLambda, clientSocket.getLocalSocketAddress(), setClientSocket ) );
+		handlers.put("port", new PortHandler(replyLambda, setClientSocket));
+		handlers.put("pasv", new PasvHandler(replyLambda, clientSocket.getLocalSocketAddress(), setClientSocket));
 
-		handlers.put( "noop", new NoopHandler( replyLambda ) );
-		handlers.put( "pass", new NoopHandler( replyLambda ) );
-		handlers.put( "rest", new CommandHandler(){
-			public void handle( String line, StringTokenizer tk ) throws CommandException {
+		handlers.put("noop", new NoopHandler(replyLambda));
+		handlers.put("pass", new NoopHandler(replyLambda));
+		handlers.put("rest", new CommandHandler(){
+			public void handle(String line, StringTokenizer tk) throws CommandException {
 			}
 		});
-		handlers.put( "type", new TypeHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object o ){
-				dtp.setRepresentation( (Representation) o );
+		handlers.put("type", new TypeHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object o){
+				dtp.setRepresentation((Representation) o);
 				return null;
 			}
 		}));
 
-		handlers.put( "quit", new QuitHandler( replyLambda, new Lambda0(){
+		handlers.put("quit", new QuitHandler(replyLambda, new Lambda0(){
 			public Object invoke(){
 				quit = true;
 				return null;
 			}
 		}));
 
-		handlers.put( "retr", new RetrHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object path ) throws Exception {
-				log.invoke_( clientSocket.getRemoteSocketAddress().toString() + " requesting '" + getCurrentDirectory() + "/" + path.toString() + "'" );
-				dtp.sendFile( getCurrentDirectory(), (String) path );
+		handlers.put("retr", new RetrHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object path) throws Exception {
+				log.invoke_(clientSocket.getRemoteSocketAddress().toString() + " requesting '" + getCurrentDirectory() + "/" + path.toString() + "'");
+				dtp.sendFile(getCurrentDirectory(), (String) path);
 				return null;
 			}
 		}));
 
-		handlers.put( "rein", new ReinHandler( replyLambda, new Lambda0(){
+		handlers.put("rein", new ReinHandler(replyLambda, new Lambda0(){
 			public Object invoke(){
-				dtp = new ServerDTP( pi, manager );
+				dtp = new ServerDTP(pi, manager);
 				return null;
 			}
 		}));
 
-		handlers.put( "syst", new SystemHandler( replyLambda ) );
-		handlers.put( "cwd", new CwdHandler( replyLambda, new Lambda1(){
-			public Object invoke( Object path ){
-				return setCurrentDirectory( sanitizePath( "/." + (String) path ) );
+		handlers.put("syst", new SystemHandler(replyLambda));
+		handlers.put("cwd", new CwdHandler(replyLambda, new Lambda1(){
+			public Object invoke(Object path){
+				return setCurrentDirectory(sanitizePath("/." + (String) path));
 			}
 		}));
-		handlers.put( "cdup", new CdupHandler( replyLambda, new Lambda0(){
+		handlers.put("cdup", new CdupHandler(replyLambda, new Lambda0(){
 			public Object invoke(){
 				return getCurrentDirectory();
 			}
 		}, new Lambda1(){
-			public Object invoke( Object path ){
-				return setCurrentDirectory( sanitizePath( "/." + (String) path ) );
+			public Object invoke(Object path){
+				return setCurrentDirectory(sanitizePath("/." + (String) path));
 			}
 		}));
 	}
 	
-	private Boolean setCurrentDirectory( String path ){
-		currentDir = sanitizePath( path );
+	private Boolean setCurrentDirectory(String path){
+		currentDir = sanitizePath(path);
 		return Boolean.TRUE;
 	}
 
@@ -250,17 +250,17 @@ public class ServerPI implements Runnable {
 		return currentDir;
 	}
 
-	private String sanitizePath( String path ){
-		String[] parts = path.split( "/" );
+	private String sanitizePath(String path){
+		String[] parts = path.split("/");
 		StringBuffer buffer = new StringBuffer();
 
-		for ( int i = 0; i < parts.length; i++ ){
-			if ( ! parts[ i ].equals( "" ) ){
-				buffer.append( "/" + parts[ i ] );
+		for (int i = 0; i < parts.length; i++){
+			if (! parts[ i ].equals("")){
+				buffer.append("/" + parts[ i ]);
 			}
 		}
 
-		return ("/" + buffer.toString()).replaceAll( "//+", "/" );
+		return ("/" + buffer.toString()).replaceAll("//+", "/");
 	}
 
 	/**
@@ -289,19 +289,19 @@ public class ServerPI implements Runnable {
 	private void clientLoop() throws Exception {
 		reply(220, "REFT FTP server (" + Server.VERSION + ") ready.");
 		String line = null;
-		while ( ! quit && (line = reader.readLine()) != null){
+		while (! quit && (line = reader.readLine()) != null){
 			StringTokenizer st = new StringTokenizer(line);
 			String command = st.nextToken().toLowerCase();
 
-			CommandHandler handler = (CommandHandler) handlers.get( command );
-			// System.out.println( "FTP: " + line );
-			if ( handler == null ){
-				reply( 502, "Unknown command: " + line );
+			CommandHandler handler = (CommandHandler) handlers.get(command);
+			// System.out.println("FTP: " + line);
+			if (handler == null){
+				reply(502, "Unknown command: " + line);
 			} else {
 				try{
-					handler.handle( line, st );
-				} catch ( CommandException ce ){
-					reply( ce.getCode(), ce.getText() );
+					handler.handle(line, st);
+				} catch (CommandException ce){
+					reply(ce.getCode(), ce.getText());
 				}
 			}
 
@@ -317,7 +317,7 @@ public class ServerPI implements Runnable {
 			Object args[] = { line, st };
 			try{
 				Method commandHandler = getClass().getMethod("handle_" + command, commandHandlerArgTypes);
-				System.out.println( "FTP Command: " + command );
+				System.out.println("FTP Command: " + command);
 				int code = ((Integer)commandHandler.invoke(this, args)).intValue();
 				if (code == 221){
 					return;
@@ -457,7 +457,7 @@ public class ServerPI implements Runnable {
 	public int handle_quit(String line, StringTokenizer st) throws CommandException {
 		username = null;
 		password = null;
-		return reply( 221, "Later!" );
+		return reply(221, "Later!");
 	}
 
 	/**
@@ -510,9 +510,9 @@ public class ServerPI implements Runnable {
 	 */
 	public int handle_pasv(String line, StringTokenizer st) throws CommandException {
 		checkLogin();
-		System.out.println( "Passive: " + line );
-		while ( st.hasMoreTokens() ){
-			System.out.println( "Next token: " + st.nextToken() );
+		System.out.println("Passive: " + line);
+		while (st.hasMoreTokens()){
+			System.out.println("Next token: " + st.nextToken());
 		}
 
 		int port = 4051;
@@ -520,22 +520,22 @@ public class ServerPI implements Runnable {
 		int high = port >> 8;
 		int low = port & 0xff;
 
-		startPassiveMode( port );
+		startPassiveMode(port);
 
-		return reply( 227, "Entering Passive Mode (0,0,0,0," + String.valueOf( high ) + "," + String.valueOf( low ) + ")" );
+		return reply(227, "Entering Passive Mode (0,0,0,0," + String.valueOf(high) + "," + String.valueOf(low) + ")");
 		// throw new CommandException(500, "'" + line + "': command not supported.");
 	}
 
-	private void startPassiveMode( final int port ){
+	private void startPassiveMode(final int port){
 		new Thread(){
 			public void run(){
 				try{
-					ServerSocket server = new ServerSocket( port );
-					while ( true ){
+					ServerSocket server = new ServerSocket(port);
+					while (true){
 						Socket client = server.accept();
-						System.out.println( "Connected from a passive client" );
+						System.out.println("Connected from a passive client");
 					}
-				} catch ( IOException ie ){
+				} catch (IOException ie){
 					ie.printStackTrace();
 				}
 			}
